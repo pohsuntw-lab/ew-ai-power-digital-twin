@@ -1,0 +1,34 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "power-digital-twin",
+  "version": "0.3.0",
+  "description": "Create downloadable, validated Power Digital Twin JSON from guided electrical requirements or user-supplied specifications and single-line drawings.",
+  "author": {
+    "name": "Embodied Worker",
+    "url": "https://www.embodiedworker.com"
+  },
+  "homepage": "https://www.embodiedworker.com",
+  "repository": "https://github.com/pohsuntw-lab/ew-ai-power-digital-twin",
+  "keywords": ["power-system", "digital-twin", "single-line-diagram", "veragrid"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "EW AI Power Digital Twin",
+        "shortDescription": "Text to Grid JSON｜文字生電力圖",
+        "longDescription": "EW AI Power Digital Twin guides users from plain-language electrical requirements, tenders, design specifications or single-line drawings to a validated, downloadable Power Digital Twin JSON file. The file can be opened in AI Power Digital Twin Dynamic Simulation System for continued review, drawing, EDC meter-channel binding and governed VeraGrid simulation. / EW AI Power Digital Twin 將文字需求、標書、設計規範或單線圖轉成可驗證、可下載的 Power Digital Twin JSON；使用者可在 AI 電力數位雙生動態推演系統繼續校對、繪圖、定位 EDC 電錶通道，並在通過工程閘門後進行 VeraGrid 推演。",
+        "developerName": "Embodied Worker",
+        "category": "Developer Tools",
+        "capabilities": ["Interactive", "Write"],
+        "websiteURL": "https://www.embodiedworker.com",
+        "defaultPrompt": [
+          "Create a downloadable power-system JSON from my description. / 請把我的描述轉成可下載的電力系統 JSON。",
+          "Guide me through missing ratings, then export JSON. / 請引導我補齊設備規格，再匯出 JSON。",
+          "Convert my specification or single-line diagram to JSON. / 請將規範或單線圖轉成 JSON。"
+        ],
+        "brandColor": "#0B3D32",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/logo.png"
+      }
+    }
+  }
+}

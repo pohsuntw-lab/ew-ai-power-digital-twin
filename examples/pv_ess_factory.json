@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.1.0",
+  "system": {"id": "MICROGRID01", "name": "PV ESS Factory", "status": "REVIEW_REQUIRED", "frequency_hz": 60, "base_power_kva": 1000},
+  "components": [
+    {"id": "GRID01", "type": "utility_grid", "name": "Utility Grid", "rated_parameters": {"voltage_v": 400, "frequency_hz": 60}, "operating_parameters": {"power_kw": null}, "status": "IN_SERVICE", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "confidence": null, "notes": []}},
+    {"id": "METER01", "type": "meter", "name": "Main Meter", "rated_parameters": {"voltage_v": 400, "current_a": null}, "operating_parameters": {"voltage_v": null, "current_a": null, "power_kw": null, "energy_kwh": null, "power_factor": null}, "status": "IN_SERVICE", "metadata": {"source": "USER_PROVIDED", "evidence_label": "MEASURED", "confidence": null, "notes": ["EDC channel bindings are external to this static example."]}},
+    {"id": "BUS_LV_01", "type": "bus", "name": "LV Main Bus", "rated_parameters": {"voltage_v": 400}, "operating_parameters": {"voltage_v": null}, "status": "IN_SERVICE", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "confidence": null, "notes": []}},
+    {"id": "PV01", "type": "pv", "name": "Rooftop PV", "rated_parameters": {"voltage_v": 400, "power_kw": 300, "apparent_power_kva": null}, "operating_parameters": {"power_kw": null, "reactive_power_kvar": null}, "status": "IN_SERVICE", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "confidence": null, "notes": []}},
+    {"id": "ESS01", "type": "ess", "name": "Battery ESS", "rated_parameters": {"voltage_v": 400, "power_kw": 200, "capacity_kwh": 500}, "operating_parameters": {"power_kw": null, "capacity_kwh": null}, "status": "IN_SERVICE", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "confidence": null, "notes": []}},
+    {"id": "LOAD01", "type": "load", "name": "Factory Load", "rated_parameters": {"voltage_v": 400, "power_kw": 450, "power_factor": null}, "operating_parameters": {"power_kw": null, "reactive_power_kvar": null}, "status": "IN_SERVICE", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "confidence": null, "notes": []}}
+  ],
+  "connections": [
+    {"id": "CONN01", "from": {"component_id": "GRID01", "terminal": "PORT"}, "to": {"component_id": "METER01", "terminal": "LINE"}, "status": "CONNECTED", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "notes": []}},
+    {"id": "CONN02", "from": {"component_id": "METER01", "terminal": "LOAD"}, "to": {"component_id": "BUS_LV_01", "terminal": "PORT"}, "status": "CONNECTED", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "notes": []}},
+    {"id": "CONN03", "from": {"component_id": "PV01", "terminal": "PORT"}, "to": {"component_id": "BUS_LV_01", "terminal": "PORT"}, "status": "CONNECTED", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "notes": []}},
+    {"id": "CONN04", "from": {"component_id": "ESS01", "terminal": "PORT"}, "to": {"component_id": "BUS_LV_01", "terminal": "PORT"}, "status": "CONNECTED", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "notes": []}},
+    {"id": "CONN05", "from": {"component_id": "BUS_LV_01", "terminal": "PORT"}, "to": {"component_id": "LOAD01", "terminal": "PORT"}, "status": "CONNECTED", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "notes": []}}
+  ],
+  "metadata": {"model_revision": "0.1.0", "created_at": "2026-09-13T00:00:00Z", "updated_at": "2026-09-13T00:00:00Z", "source": "DOCUMENTATION_EXAMPLE", "evidence_label": "DERIVED", "notes": ["No operating value has been invented."]}
+}

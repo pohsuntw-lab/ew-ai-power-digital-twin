@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:asns:power-digital-twin:schema:0.1.0",
+  "title": "ASNS Power Digital Twin JSON Contract",
+  "description": "Authoritative interchange contract for AI Power Digital Twin Dynamic Simulation System models.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "system", "components", "connections", "metadata"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "system": {"$ref": "#/$defs/system"},
+    "components": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/component"}
+    },
+    "connections": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/connection"}
+    },
+    "metadata": {"$ref": "#/$defs/documentMetadata"}
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]{0,63}$"
+    },
+    "nullablePositive": {
+      "type": ["number", "null"],
+      "exclusiveMinimum": 0
+    },
+    "nullableNonNegative": {
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "nullableSigned": {
+      "type": ["number", "null"]
+    },
+    "nullablePowerFactor": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "system": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "status", "frequency_hz", "base_power_kva"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "name": {"type": "string", "minLength": 1, "maxLength": 200},
+        "status": {
+          "enum": ["DRAFT", "REVIEW_REQUIRED", "MODEL_READY", "REJECTED"]
+        },
+        "frequency_hz": {"$ref": "#/$defs/nullablePositive"},
+        "base_power_kva": {"$ref": "#/$defs/nullablePositive"}
+      }
+    },
+    "ratedParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "voltage_v": {"$ref": "#/$defs/nullablePositive"},
+        "primary_voltage_v": {"$ref": "#/$defs/nullablePositive"},
+        "secondary_voltage_v": {"$ref": "#/$defs/nullablePositive"},
+        "power_kw": {"$ref": "#/$defs/nullableNonNegative"},
+        "apparent_power_kva": {"$ref": "#/$defs/nullableNonNegative"},
+        "reactive_power_kvar": {"$ref": "#/$defs/nullableNonNegative"},
+        "current_a": {"$ref": "#/$defs/nullableNonNegative"},
+        "frequency_hz": {"$ref": "#/$defs/nullablePositive"},
+        "impedance_percent": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "energy_kwh": {"$ref": "#/$defs/nullableNonNegative"},
+        "capacity_kwh": {"$ref": "#/$defs/nullableNonNegative"},
+        "power_factor": {"$ref": "#/$defs/nullablePowerFactor"}
+      }
+    },
+    "operatingParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "voltage_v": {"$ref": "#/$defs/nullablePositive"},
+        "primary_voltage_v": {"$ref": "#/$defs/nullablePositive"},
+        "secondary_voltage_v": {"$ref": "#/$defs/nullablePositive"},
+        "power_kw": {"$ref": "#/$defs/nullableSigned"},
+        "apparent_power_kva": {"$ref": "#/$defs/nullableNonNegative"},
+        "reactive_power_kvar": {"$ref": "#/$defs/nullableSigned"},
+        "current_a": {"$ref": "#/$defs/nullableNonNegative"},
+        "frequency_hz": {"$ref": "#/$defs/nullablePositive"},
+        "impedance_percent": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "energy_kwh": {"$ref": "#/$defs/nullableNonNegative"},
+        "capacity_kwh": {"$ref": "#/$defs/nullableNonNegative"},
+        "power_factor": {"$ref": "#/$defs/nullablePowerFactor"}
+      }
+    },
+    "componentMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "evidence_label", "confidence", "notes"],
+      "properties": {
+        "source": {"type": "string", "minLength": 1, "maxLength": 500},
+        "evidence_label": {
+          "enum": ["MEASURED", "DERIVED", "ESTIMATED", "SIMULATED", "OPTIMIZED"]
+        },
+        "confidence": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "notes": {
+          "type": "array",
+          "items": {"type": "string", "maxLength": 1000}
+        },
+        "tags": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1, "maxLength": 100},
+          "uniqueItems": true
+        }
+      }
+    },
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "name", "rated_parameters", "operating_parameters", "status", "metadata"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "type": {
+          "enum": [
+            "utility_grid", "bus", "transformer", "breaker", "cable", "load",
+            "motor", "generator", "pv", "ess", "meter", "ct_pt"
+          ]
+        },
+        "name": {"type": "string", "minLength": 1, "maxLength": 200},
+        "rated_parameters": {"$ref": "#/$defs/ratedParameters"},
+        "operating_parameters": {"$ref": "#/$defs/operatingParameters"},
+        "status": {
+          "enum": ["IN_SERVICE", "OUT_OF_SERVICE", "OPEN", "CLOSED", "TRIPPED", "UNKNOWN"]
+        },
+        "metadata": {"$ref": "#/$defs/componentMetadata"}
+      }
+    },
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["component_id", "terminal"],
+      "properties": {
+        "component_id": {"$ref": "#/$defs/id"},
+        "terminal": {
+          "enum": ["PORT", "LINE", "LOAD", "PRIMARY", "SECONDARY"]
+        }
+      }
+    },
+    "connectionMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "evidence_label", "notes"],
+      "properties": {
+        "source": {"type": "string", "minLength": 1, "maxLength": 500},
+        "evidence_label": {
+          "enum": ["MEASURED", "DERIVED", "ESTIMATED", "SIMULATED", "OPTIMIZED"]
+        },
+        "notes": {
+          "type": "array",
+          "items": {"type": "string", "maxLength": 1000}
+        }
+      }
+    },
+    "connection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "from", "to", "status", "metadata"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "from": {"$ref": "#/$defs/endpoint"},
+        "to": {"$ref": "#/$defs/endpoint"},
+        "status": {"enum": ["CONNECTED", "DISCONNECTED", "UNKNOWN"]},
+        "metadata": {"$ref": "#/$defs/connectionMetadata"}
+      }
+    },
+    "documentMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model_revision", "created_at", "updated_at", "source", "evidence_label", "notes"],
+      "properties": {
+        "model_revision": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        },
+        "created_at": {"type": "string", "format": "date-time"},
+        "updated_at": {"type": "string", "format": "date-time"},
+        "source": {"type": "string", "minLength": 1, "maxLength": 500},
+        "evidence_label": {
+          "enum": ["MEASURED", "DERIVED", "ESTIMATED", "SIMULATED", "OPTIMIZED"]
+        },
+        "notes": {
+          "type": "array",
+          "items": {"type": "string", "maxLength": 1000}
+        }
+      }
+    }
+  }
+}

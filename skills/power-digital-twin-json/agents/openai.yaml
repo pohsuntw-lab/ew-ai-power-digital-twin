@@ -1,0 +1,9 @@
+interface:
+  display_name: "EW AI Power Digital Twin"
+  short_description: "Text to power-system JSON｜文字生電力系統 JSON"
+  icon_small: "../../assets/icon.png"
+  icon_large: "../../assets/icon.png"
+  brand_color: "#0B3D32"
+  default_prompt: "Use $power-digital-twin-json to turn my electrical-system description or supplied document/drawing into a validated downloadable JSON file. / 使用 $power-digital-twin-json 將我的電力系統描述或文件／圖紙轉成可驗證、可下載的 JSON 檔案。"
+policy:
+  allow_implicit_invocation: true

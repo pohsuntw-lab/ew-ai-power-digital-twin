@@ -1,0 +1,91 @@
+{
+  "schema_version": "0.1.0",
+  "system": {
+    "id": "FACTORY01",
+    "name": "Simple Factory Distribution",
+    "status": "REVIEW_REQUIRED",
+    "frequency_hz": 60,
+    "base_power_kva": 1500
+  },
+  "components": [
+    {
+      "id": "GRID01",
+      "type": "utility_grid",
+      "name": "Utility Grid",
+      "rated_parameters": {"voltage_v": 11400, "frequency_hz": 60},
+      "operating_parameters": {"voltage_v": null, "power_kw": null, "reactive_power_kvar": null},
+      "status": "IN_SERVICE",
+      "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "confidence": null, "notes": []}
+    },
+    {
+      "id": "ACB01",
+      "type": "breaker",
+      "name": "Main ACB",
+      "rated_parameters": {"voltage_v": 11400, "current_a": null},
+      "operating_parameters": {"voltage_v": null, "current_a": null},
+      "status": "CLOSED",
+      "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "confidence": null, "notes": ["Rated current was not supplied."]}
+    },
+    {
+      "id": "TR01",
+      "type": "transformer",
+      "name": "Main Transformer",
+      "rated_parameters": {"primary_voltage_v": 11400, "secondary_voltage_v": 400, "apparent_power_kva": 1500, "impedance_percent": null},
+      "operating_parameters": {"primary_voltage_v": null, "secondary_voltage_v": null, "power_kw": null},
+      "status": "IN_SERVICE",
+      "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "confidence": null, "notes": ["Impedance was not supplied and remains null."]}
+    },
+    {
+      "id": "BUS_LV_01",
+      "type": "bus",
+      "name": "LV Main Bus",
+      "rated_parameters": {"voltage_v": 400},
+      "operating_parameters": {"voltage_v": null},
+      "status": "IN_SERVICE",
+      "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "confidence": null, "notes": []}
+    },
+    {
+      "id": "LOAD01",
+      "type": "load",
+      "name": "Production Line 1",
+      "rated_parameters": {"voltage_v": 400, "power_kw": 250, "power_factor": 0.9},
+      "operating_parameters": {"power_kw": null, "reactive_power_kvar": null},
+      "status": "IN_SERVICE",
+      "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "confidence": null, "notes": []}
+    },
+    {
+      "id": "LOAD02",
+      "type": "load",
+      "name": "Production Line 2",
+      "rated_parameters": {"voltage_v": 400, "power_kw": 180, "power_factor": null},
+      "operating_parameters": {"power_kw": null, "reactive_power_kvar": null},
+      "status": "IN_SERVICE",
+      "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "confidence": null, "notes": ["Power factor was not supplied."]}
+    },
+    {
+      "id": "LOAD03",
+      "type": "load",
+      "name": "HVAC",
+      "rated_parameters": {"voltage_v": 400, "power_kw": 120, "power_factor": 0.88},
+      "operating_parameters": {"power_kw": null, "reactive_power_kvar": null},
+      "status": "IN_SERVICE",
+      "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "confidence": null, "notes": []}
+    }
+  ],
+  "connections": [
+    {"id": "CONN01", "from": {"component_id": "GRID01", "terminal": "PORT"}, "to": {"component_id": "ACB01", "terminal": "LINE"}, "status": "CONNECTED", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "notes": []}},
+    {"id": "CONN02", "from": {"component_id": "ACB01", "terminal": "LOAD"}, "to": {"component_id": "TR01", "terminal": "PRIMARY"}, "status": "CONNECTED", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "notes": []}},
+    {"id": "CONN03", "from": {"component_id": "TR01", "terminal": "SECONDARY"}, "to": {"component_id": "BUS_LV_01", "terminal": "PORT"}, "status": "CONNECTED", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "notes": []}},
+    {"id": "CONN04", "from": {"component_id": "BUS_LV_01", "terminal": "PORT"}, "to": {"component_id": "LOAD01", "terminal": "PORT"}, "status": "CONNECTED", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "notes": []}},
+    {"id": "CONN05", "from": {"component_id": "BUS_LV_01", "terminal": "PORT"}, "to": {"component_id": "LOAD02", "terminal": "PORT"}, "status": "CONNECTED", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "notes": []}},
+    {"id": "CONN06", "from": {"component_id": "BUS_LV_01", "terminal": "PORT"}, "to": {"component_id": "LOAD03", "terminal": "PORT"}, "status": "CONNECTED", "metadata": {"source": "USER_PROVIDED", "evidence_label": "DERIVED", "notes": []}}
+  ],
+  "metadata": {
+    "model_revision": "0.1.0",
+    "created_at": "2026-09-13T00:00:00Z",
+    "updated_at": "2026-09-13T00:00:00Z",
+    "source": "DOCUMENTATION_EXAMPLE",
+    "evidence_label": "DERIVED",
+    "notes": ["Review-required example; null values are intentional and were not inferred."]
+  }
+}

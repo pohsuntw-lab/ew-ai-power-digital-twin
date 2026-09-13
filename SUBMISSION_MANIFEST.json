@@ -1,0 +1,8 @@
+{
+  "plugin": "EW AI Power Digital Twin",
+  "plugin_version": "0.3.0",
+  "contract_schema_version": "0.1.0",
+  "schema_sha256": "ff77ca6804ab3760a497147307bdc70866702b762602112f1147de206f4043fe",
+  "transport": "skills-only",
+  "contains_mcp_server": false
+}
