@@ -1,8 +1,8 @@
-# EW AI Power Digital Twin v0.5.0 Publishing Guide / 發布指引
+# EW AI Power Digital Twin v0.5.1 Publishing Guide / 發布指引
 
 ## Release form / 發布形式
 
-Publish candidate version `0.5.0` as a **Skills-only** ChatGPT plugin only after fresh review and explicit owner authorization. The user-facing job is guided text/document/drawing interpretation followed by a downloadable schema-version `0.3.0` Power + Control JSON file with explicit phase/wire, terminal, contact, coil, delay and interlock semantics. The local MCP implementation remains a deterministic development and validation aid; it is not part of the public submission bundle and the Mac mini is not exposed to the Internet.
+Version `0.5.1` is the owner-authorized **Skills-only** ChatGPT plug-in update prepared for OpenAI review. It retains Contract `0.3.0` and adds a strict generation invariant: every external power/control connection joins two distinct components. Star-delta starters use a separate star-point bus, complete evidenced delta cross-connections and control-compatible transformer/fuse terminals; missing wiring stays a blocking gap. Version `0.5.0` remains the published version until `0.5.1` passes the Platform Skill scan/review and final publish action. The local MCP remains an unpublished deterministic development aid.
 
 ## Listing / 上架資訊
 
@@ -19,7 +19,7 @@ Publish candidate version `0.5.0` as a **Skills-only** ChatGPT plugin only after
 
 1. `Create a downloadable power-system JSON from my description. / 請把我的描述轉成可下載的電力系統 JSON。`
 2. `Guide me through missing ratings, then export JSON. / 請引導我補齊設備規格，再匯出 JSON。`
-3. `Convert my specification or single-line diagram to JSON. / 請將規範或單線圖轉成 JSON。`
+3. `Convert my specification, single-line diagram, or control diagram to JSON. / 請將規範、單線圖或控制圖轉成 JSON。`
 
 ## Required checks / 必要檢查
 
@@ -33,7 +33,7 @@ Publish candidate version `0.5.0` as a **Skills-only** ChatGPT plugin only after
 8. Complete required developer/business verification and truthful legal attestations in the portal.
 9. Submit for OpenAI review. Publish only after approval and a final owner decision; do not merge to `main` automatically.
 
-Version `0.3.0` completed this sequence and remains published at `https://chatgpt.com/plugins/plugins_6aa67d96732c819182bcd9b52eb9fe3d`. Candidate `0.5.0` source must repeat every gate and receive explicit owner authorization before publication.
+Version `0.5.0` completed this sequence and is published at `https://chatgpt.com/plugins/plugins_6aa67d96732c819182bcd9b52eb9fe3d`. Its OpenAI submission ID is `appsub_6aa796a4a6308191b9f3dcfccaabdb53`. Version `0.5.1` has explicit owner authorization in the development task; its scan, review and publication evidence must be recorded only after those actions succeed.
 
 ## Web handoff / Web 銜接
 

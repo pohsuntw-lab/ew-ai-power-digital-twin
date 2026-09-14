@@ -3,7 +3,7 @@ name: power-digital-twin-json
 description: Guide a user from plain-language electrical requirements or supplied specifications and single-line drawings to a validated, downloadable Power Digital Twin JSON file for continued work in EW AI Power Digital Twin.
 ---
 
-# EW AI Power Digital Twin v0.5.0
+# EW AI Power Digital Twin v0.5.1
 
 Turn a user's electrical-system intent into one concrete deliverable: a UTF-8 Power Digital Twin JSON file that conforms to current schema version `0.3.0`. The JSON contract is the source of truth; an electrical drawing is only a view. Reply in the user's language. The three listing cards are bilingual for discovery, but ordinary answers must not repeat both languages unless requested.
 
@@ -47,13 +47,23 @@ Ask one main question per turn, with at most one tightly related follow-up. Firs
 2. Use only the 20 supported component types and only schema fields.
 3. Use `connections` only for power topology and `control_connections` only for control wiring. Never add component-level `from` or `to`.
 4. Keep the generated state `DRAFT` or `REVIEW_REQUIRED`. The AI must never issue `MODEL_READY`.
-5. Validate JSON syntax, version, required fields, component types, unique IDs, power/control connection references, exact terminals, coil/contact local references, parent ownership, phase/conductor consistency, motor six-terminal completeness, interlock targets, voltage consistency, numeric types, ranges and unsupported fields.
+5. Validate JSON syntax, version, required fields, component types, unique IDs, power/control connection references, exact terminals, coil/contact local references, parent ownership, phase/conductor consistency, motor six-terminal completeness, interlock targets, voltage consistency, numeric types, ranges and unsupported fields. Before delivery, assert for every power and control connection that `from.component_id != to.component_id`; repair every `SELF_CONNECTION` structurally rather than suppressing it.
 6. Correct structural errors only. Do not fill a missing engineering value to make validation pass.
 7. Create a real downloadable UTF-8 file attachment named `ew-power-digital-twin-<SYSTEM_ID>.json`, using a lowercase filesystem-safe form of the system ID. Do not deliver only a fenced code block when file creation is available.
 8. In the final response, state the schema version, model status, validation result and unresolved engineering gaps. Provide the file link.
 9. Direct the user to the authenticated AI Power Digital Twin Dynamic Simulation System at `https://asns-egs-power-sandbox.queboxun.chatgpt.site` to open the JSON, continue review/drawing, bind EDC SUID/CUID channels, complete the human `MODEL_READY` gate and run VeraGrid simulation.
 
 If deterministic validation cannot actually run, label the result `VALIDATION_NOT_RUN`; do not claim that the file is validated. The JSON file may still be delivered as `DRAFT` with a clear warning.
+
+### Power and control wiring invariants
+
+- A connection is an external wire between two distinct components. A device's internal pole, contact, winding, coil/contact ownership or terminal association is not a connection and must never be encoded by wiring one terminal of a component back to another terminal on that same component.
+- For a star-delta starter, declare the motor terminals `U1/V1/W1/U2/V2/W2`. Route each star-contactor pole to a separate `bus` component such as `STAR_POINT`; never short the three contactor terminals with self-connections.
+- Route all three delta-contactor poles between distinct motor terminals according to the source drawing. If the cross-connections cannot be established from visible evidence, leave the topology incomplete, describe the blocking gap and ask the user; do not invent a delta circuit.
+- Model an overload NC contact, push-button contact, auxiliary contact and timer contact in the owning component's `control.contacts`. External `control_connections` must enter one contact terminal and leave the other toward a different component; do not add a wire directly from terminal 95 to 96 of the same overload relay.
+- Declare control-transformer secondary and control-fuse terminals with a control-compatible terminal kind before using them in `control_connections`.
+- A `STAR_DELTA_SEQUENCE` must express star contactor de-energization before delta contactor energization. It must never command STAR and DELTA contactors energized simultaneously.
+- If an internal relationship has no first-class contract field, preserve it as an explicit blocking gap. Never fabricate a self-wire to make the drawing look connected.
 
 ## Canonical units
 

@@ -18,7 +18,7 @@ Every component requires `id`, `type`, `name`, `rated_parameters`, `operating_pa
 
 Every 0.2.0 or 0.3.0 power connection declares one `phase_configuration`: `SINGLE_PHASE_TWO_WIRE`, `SINGLE_PHASE_THREE_WIRE`, `THREE_PHASE_THREE_WIRE`, `THREE_PHASE_FOUR_WIRE`, `INDIVIDUAL_CONDUCTOR` or `UNKNOWN`. Individual conductors carry exactly one conductor. Power wiring uses only POWER/GROUND terminals; control wiring uses only CONTROL/COIL/CONTACT/GROUND terminals. A star-delta motor declares U1/V1/W1/U2/V2/W2, and its sequence outputs to one STAR and one DELTA contactor. A mutual interlock targets exactly two contactors. Never infer these facts from voltage magnitude or drawing style.
 
-Every referenced component must exist. Self-connections are invalid. Known endpoint voltages must agree within the validator tolerance; a transformer is the intentional voltage-changing boundary because its primary and secondary terminals carry their respective voltage ratings.
+Every referenced component must exist. Every power or control connection must join two distinct component IDs; self-connections are invalid. Internal poles, contacts, windings and terminal associations are component semantics, not external wires. A star-delta starter uses a separate `bus` such as `STAR_POINT` for the star junction and explicit cross-component delta-contactor wiring. If those cross-connections are not visible, preserve a blocking gap instead of inventing a self-wire. Known endpoint voltages must agree within the validator tolerance; a transformer is the intentional voltage-changing boundary because its primary and secondary terminals carry their respective voltage ratings.
 
 ## Missing values and evidence
 
@@ -48,5 +48,6 @@ Timestamps must reflect actual file-generation time rather than copying the exam
 - `"id": "Main Bus"`: invalid ID because it contains whitespace.
 - component-level `"from"` / `"to"`: conflicting topology representation.
 - a connection referencing `BUS03` when no such component exists.
+- a connection whose `from.component_id` and `to.component_id` are both `KM3`; use a separate star-point bus or component semantics instead.
 - `"voltage_kv": 22.8`: unsupported unit field; use `"voltage_v": 22800` only after the unit is explicit.
 - AI-generated `"status": "MODEL_READY"`: human approval boundary violation.

@@ -4,6 +4,8 @@ EW AI Power Digital Twin is a Skills-only ChatGPT plugin that guides a user from
 
 EW AI Power Digital Twin 是純 Skill 形式的 ChatGPT 外掛，引導使用者將電力系統文字描述、規範、標書、單線圖或工業控制圖轉換為可下載的 Power + Control Digital Twin JSON。
 
+Current source version / 目前原始碼版本：`0.5.1`. This patch prevents AI-generated self-connections, requires a separate star-point bus for star-delta starters, requires all evidenced delta cross-connections, and keeps control wiring on control-compatible terminals. / 本修正版禁止 AI 產生元件自我連線，星三角啟動器必須使用獨立星點、保留完整且有證據的三角跨接，控制配線也必須使用正確的控制端子領域。
+
 ## Contract boundary / 契約邊界
 
 - Authoritative schema: `schemas/power-digital-twin.schema.json`
@@ -11,6 +13,7 @@ EW AI Power Digital Twin 是純 Skill 形式的 ChatGPT 外掛，引導使用者
 - Power + Control components include contactors, overload relays, fuses, control transformers, push buttons, timer relays and auxiliary contacts.
 - Explicit terminals, power connections, control connections, coils, NO/NC contacts, delays, interlocks and motor star/delta relationships are represented as contract data rather than hidden in metadata.
 - Missing engineering facts remain `null`; the Skill must not invent typical values.
+- Every external power/control connection joins two distinct components. Internal poles, contacts and windings are component semantics rather than self-wires.
 - Generated files remain `DRAFT` or `REVIEW_REQUIRED`; only the destination engineering system may grant `MODEL_READY` after human review.
 - This repository does not contain the Mac mini service, VeraGridEngine, EDC credentials, customer drawings or model weights.
 
