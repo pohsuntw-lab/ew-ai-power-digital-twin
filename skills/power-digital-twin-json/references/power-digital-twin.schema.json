@@ -1,28 +1,95 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:asns:power-digital-twin:schema:0.1.0",
+  "$id": "urn:asns:power-digital-twin:schema:0.3.0",
   "title": "ASNS Power Digital Twin JSON Contract",
   "description": "Authoritative interchange contract for AI Power Digital Twin Dynamic Simulation System models.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "system", "components", "connections", "metadata"],
+  "required": [
+    "schema_version",
+    "system",
+    "components",
+    "connections",
+    "metadata"
+  ],
   "properties": {
-    "schema_version": {"const": "0.1.0"},
-    "system": {"$ref": "#/$defs/system"},
+    "schema_version": { "enum": ["0.1.0", "0.2.0", "0.3.0"] },
+    "system": { "$ref": "#/$defs/system" },
     "components": {
       "type": "array",
-      "items": {"$ref": "#/$defs/component"}
+      "items": { "$ref": "#/$defs/component" }
     },
     "connections": {
       "type": "array",
-      "items": {"$ref": "#/$defs/connection"}
+      "items": { "$ref": "#/$defs/connection" }
     },
-    "metadata": {"$ref": "#/$defs/documentMetadata"}
+    "control_connections": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/controlConnection" }
+    },
+    "control_logic": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/controlLogic" }
+    },
+    "metadata": { "$ref": "#/$defs/documentMetadata" }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "schema_version": { "const": "0.1.0" } },
+        "required": ["schema_version"]
+      },
+      "then": {
+        "properties": {
+          "connections": {
+            "items": {
+              "not": {
+                "anyOf": [
+                  { "required": ["phase_configuration"] },
+                  { "required": ["conductors"] }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "schema_version": { "const": "0.2.0" } },
+        "required": ["schema_version"]
+      },
+      "then": {
+        "properties": {
+          "connections": {
+            "items": { "required": ["phase_configuration"] }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "schema_version": { "const": "0.3.0" } },
+        "required": ["schema_version"]
+      },
+      "then": {
+        "required": ["control_connections", "control_logic"],
+        "properties": {
+          "connections": {
+            "items": { "required": ["phase_configuration"] }
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
     "id": {
       "type": "string",
       "pattern": "^[A-Z][A-Z0-9_]{0,63}$"
+    },
+    "terminalId": {
+      "type": "string",
+      "pattern": "^[A-Z0-9][A-Z0-9_]{0,31}$"
     },
     "nullablePositive": {
       "type": ["number", "null"],
@@ -40,62 +107,72 @@
       "minimum": 0,
       "maximum": 1
     },
+    "phaseConfiguration": {
+      "enum": [
+        "SINGLE_PHASE_TWO_WIRE",
+        "SINGLE_PHASE_THREE_WIRE",
+        "THREE_PHASE_THREE_WIRE",
+        "THREE_PHASE_FOUR_WIRE",
+        "INDIVIDUAL_CONDUCTOR",
+        "UNKNOWN"
+      ]
+    },
     "system": {
       "type": "object",
       "additionalProperties": false,
       "required": ["id", "name", "status", "frequency_hz", "base_power_kva"],
       "properties": {
-        "id": {"$ref": "#/$defs/id"},
-        "name": {"type": "string", "minLength": 1, "maxLength": 200},
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
         "status": {
           "enum": ["DRAFT", "REVIEW_REQUIRED", "MODEL_READY", "REJECTED"]
         },
-        "frequency_hz": {"$ref": "#/$defs/nullablePositive"},
-        "base_power_kva": {"$ref": "#/$defs/nullablePositive"}
+        "frequency_hz": { "$ref": "#/$defs/nullablePositive" },
+        "base_power_kva": { "$ref": "#/$defs/nullablePositive" }
       }
     },
     "ratedParameters": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "voltage_v": {"$ref": "#/$defs/nullablePositive"},
-        "primary_voltage_v": {"$ref": "#/$defs/nullablePositive"},
-        "secondary_voltage_v": {"$ref": "#/$defs/nullablePositive"},
-        "power_kw": {"$ref": "#/$defs/nullableNonNegative"},
-        "apparent_power_kva": {"$ref": "#/$defs/nullableNonNegative"},
-        "reactive_power_kvar": {"$ref": "#/$defs/nullableNonNegative"},
-        "current_a": {"$ref": "#/$defs/nullableNonNegative"},
-        "frequency_hz": {"$ref": "#/$defs/nullablePositive"},
+        "voltage_v": { "$ref": "#/$defs/nullablePositive" },
+        "primary_voltage_v": { "$ref": "#/$defs/nullablePositive" },
+        "secondary_voltage_v": { "$ref": "#/$defs/nullablePositive" },
+        "power_kw": { "$ref": "#/$defs/nullableNonNegative" },
+        "apparent_power_kva": { "$ref": "#/$defs/nullableNonNegative" },
+        "reactive_power_kvar": { "$ref": "#/$defs/nullableNonNegative" },
+        "current_a": { "$ref": "#/$defs/nullableNonNegative" },
+        "frequency_hz": { "$ref": "#/$defs/nullablePositive" },
         "impedance_percent": {
           "type": ["number", "null"],
           "minimum": 0,
           "maximum": 100
         },
-        "energy_kwh": {"$ref": "#/$defs/nullableNonNegative"},
-        "capacity_kwh": {"$ref": "#/$defs/nullableNonNegative"},
-        "power_factor": {"$ref": "#/$defs/nullablePowerFactor"}
+        "energy_kwh": { "$ref": "#/$defs/nullableNonNegative" },
+        "capacity_kwh": { "$ref": "#/$defs/nullableNonNegative" },
+        "power_factor": { "$ref": "#/$defs/nullablePowerFactor" }
       }
     },
     "operatingParameters": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "voltage_v": {"$ref": "#/$defs/nullablePositive"},
-        "primary_voltage_v": {"$ref": "#/$defs/nullablePositive"},
-        "secondary_voltage_v": {"$ref": "#/$defs/nullablePositive"},
-        "power_kw": {"$ref": "#/$defs/nullableSigned"},
-        "apparent_power_kva": {"$ref": "#/$defs/nullableNonNegative"},
-        "reactive_power_kvar": {"$ref": "#/$defs/nullableSigned"},
-        "current_a": {"$ref": "#/$defs/nullableNonNegative"},
-        "frequency_hz": {"$ref": "#/$defs/nullablePositive"},
+        "voltage_v": { "$ref": "#/$defs/nullablePositive" },
+        "primary_voltage_v": { "$ref": "#/$defs/nullablePositive" },
+        "secondary_voltage_v": { "$ref": "#/$defs/nullablePositive" },
+        "power_kw": { "$ref": "#/$defs/nullableSigned" },
+        "apparent_power_kva": { "$ref": "#/$defs/nullableNonNegative" },
+        "reactive_power_kvar": { "$ref": "#/$defs/nullableSigned" },
+        "current_a": { "$ref": "#/$defs/nullableNonNegative" },
+        "frequency_hz": { "$ref": "#/$defs/nullablePositive" },
         "impedance_percent": {
           "type": ["number", "null"],
           "minimum": 0,
           "maximum": 100
         },
-        "energy_kwh": {"$ref": "#/$defs/nullableNonNegative"},
-        "capacity_kwh": {"$ref": "#/$defs/nullableNonNegative"},
-        "power_factor": {"$ref": "#/$defs/nullablePowerFactor"}
+        "energy_kwh": { "$ref": "#/$defs/nullableNonNegative" },
+        "capacity_kwh": { "$ref": "#/$defs/nullableNonNegative" },
+        "power_factor": { "$ref": "#/$defs/nullablePowerFactor" }
       }
     },
     "componentMetadata": {
@@ -103,7 +180,7 @@
       "additionalProperties": false,
       "required": ["source", "evidence_label", "confidence", "notes"],
       "properties": {
-        "source": {"type": "string", "minLength": 1, "maxLength": 500},
+        "source": { "type": "string", "minLength": 1, "maxLength": 500 },
         "evidence_label": {
           "enum": ["MEASURED", "DERIVED", "ESTIMATED", "SIMULATED", "OPTIMIZED"]
         },
@@ -114,45 +191,205 @@
         },
         "notes": {
           "type": "array",
-          "items": {"type": "string", "maxLength": 1000}
+          "items": { "type": "string", "maxLength": 1000 }
         },
         "tags": {
           "type": "array",
-          "items": {"type": "string", "minLength": 1, "maxLength": 100},
+          "items": { "type": "string", "minLength": 1, "maxLength": 100 },
           "uniqueItems": true
         }
+      }
+    },
+    "terminalDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "role"],
+      "properties": {
+        "id": { "$ref": "#/$defs/terminalId" },
+        "kind": {
+          "enum": ["POWER", "CONTROL", "COIL", "CONTACT", "MEASUREMENT", "GROUND"]
+        },
+        "role": {
+          "enum": [
+            "PORT",
+            "LINE",
+            "LOAD",
+            "PRIMARY",
+            "SECONDARY",
+            "COIL",
+            "CONTACT",
+            "MOTOR_WINDING",
+            "CONTROL_SUPPLY",
+            "COMMON",
+            "PROTECTIVE_EARTH"
+          ]
+        },
+        "phase": {
+          "type": ["string", "null"],
+          "enum": ["L", "L1", "L2", "L3", "N", "PE", "U", "V", "W", null]
+        }
+      }
+    },
+    "coilDefinition": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["terminal_ids", "rated_voltage_v", "frequency_hz"],
+      "properties": {
+        "terminal_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/terminalId" },
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true
+        },
+        "rated_voltage_v": { "$ref": "#/$defs/nullablePositive" },
+        "frequency_hz": { "$ref": "#/$defs/nullablePositive" }
+      }
+    },
+    "contactDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "normal_state", "terminal_ids", "actuation", "delay_seconds"],
+      "properties": {
+        "id": { "$ref": "#/$defs/terminalId" },
+        "kind": { "enum": ["MAIN", "AUXILIARY", "OVERLOAD", "TIMER"] },
+        "normal_state": { "enum": ["NO", "NC"] },
+        "terminal_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/terminalId" },
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true
+        },
+        "actuation": { "enum": ["IMMEDIATE", "ON_DELAY", "OFF_DELAY", "THERMAL_TRIP"] },
+        "delay_seconds": { "$ref": "#/$defs/nullableNonNegative" }
+      }
+    },
+    "controlParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coil", "contacts", "parent_component_id", "pole_count", "delay_mode", "motor_connection"],
+      "properties": {
+        "coil": { "$ref": "#/$defs/coilDefinition" },
+        "contacts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/contactDefinition" }
+        },
+        "parent_component_id": {
+          "anyOf": [
+            { "$ref": "#/$defs/id" },
+            { "type": "null" }
+          ]
+        },
+        "pole_count": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 4
+        },
+        "delay_mode": {
+          "type": ["string", "null"],
+          "enum": ["ON_DELAY", "OFF_DELAY", "INTERVAL", "UNKNOWN", null]
+        },
+        "motor_connection": {
+          "type": ["string", "null"],
+          "enum": ["STAR", "DELTA", "STAR_DELTA", "UNKNOWN", null]
+        },
+        "trip_class": { "type": ["string", "null"], "maxLength": 50 }
       }
     },
     "component": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "type", "name", "rated_parameters", "operating_parameters", "status", "metadata"],
+      "required": [
+        "id",
+        "type",
+        "name",
+        "rated_parameters",
+        "operating_parameters",
+        "status",
+        "metadata"
+      ],
       "properties": {
-        "id": {"$ref": "#/$defs/id"},
+        "id": { "$ref": "#/$defs/id" },
         "type": {
           "enum": [
-            "utility_grid", "bus", "transformer", "breaker", "cable", "load",
-            "motor", "generator", "pv", "ess", "meter", "ct_pt"
+            "utility_grid",
+            "bus",
+            "transformer",
+            "breaker",
+            "cable",
+            "load",
+            "motor",
+            "generator",
+            "pv",
+            "ess",
+            "meter",
+            "ct_pt",
+            "isolator",
+            "contactor",
+            "overload_relay",
+            "fuse",
+            "control_transformer",
+            "push_button",
+            "timer_relay",
+            "aux_contact"
           ]
         },
-        "name": {"type": "string", "minLength": 1, "maxLength": 200},
-        "rated_parameters": {"$ref": "#/$defs/ratedParameters"},
-        "operating_parameters": {"$ref": "#/$defs/operatingParameters"},
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "rated_parameters": { "$ref": "#/$defs/ratedParameters" },
+        "operating_parameters": { "$ref": "#/$defs/operatingParameters" },
         "status": {
-          "enum": ["IN_SERVICE", "OUT_OF_SERVICE", "OPEN", "CLOSED", "TRIPPED", "UNKNOWN"]
+          "enum": [
+            "IN_SERVICE",
+            "OUT_OF_SERVICE",
+            "OPEN",
+            "CLOSED",
+            "TRIPPED",
+            "UNKNOWN",
+            "ENERGIZED",
+            "DEENERGIZED"
+          ]
         },
-        "metadata": {"$ref": "#/$defs/componentMetadata"}
-      }
+        "terminals": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/terminalDefinition" },
+          "minItems": 1
+        },
+        "control": { "$ref": "#/$defs/controlParameters" },
+        "metadata": { "$ref": "#/$defs/componentMetadata" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": ["isolator", "contactor", "overload_relay", "fuse", "control_transformer", "push_button", "timer_relay", "aux_contact"]
+              }
+            },
+            "required": ["type"]
+          },
+          "then": { "required": ["terminals"] }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": ["contactor", "overload_relay", "push_button", "timer_relay", "aux_contact"]
+              }
+            },
+            "required": ["type"]
+          },
+          "then": { "required": ["control"] }
+        }
+      ]
     },
     "endpoint": {
       "type": "object",
       "additionalProperties": false,
       "required": ["component_id", "terminal"],
       "properties": {
-        "component_id": {"$ref": "#/$defs/id"},
-        "terminal": {
-          "enum": ["PORT", "LINE", "LOAD", "PRIMARY", "SECONDARY"]
-        }
+        "component_id": { "$ref": "#/$defs/id" },
+        "terminal": { "$ref": "#/$defs/terminalId" }
       }
     },
     "connectionMetadata": {
@@ -160,13 +397,13 @@
       "additionalProperties": false,
       "required": ["source", "evidence_label", "notes"],
       "properties": {
-        "source": {"type": "string", "minLength": 1, "maxLength": 500},
+        "source": { "type": "string", "minLength": 1, "maxLength": 500 },
         "evidence_label": {
           "enum": ["MEASURED", "DERIVED", "ESTIMATED", "SIMULATED", "OPTIMIZED"]
         },
         "notes": {
           "type": "array",
-          "items": {"type": "string", "maxLength": 1000}
+          "items": { "type": "string", "maxLength": 1000 }
         }
       }
     },
@@ -175,31 +412,194 @@
       "additionalProperties": false,
       "required": ["id", "from", "to", "status", "metadata"],
       "properties": {
-        "id": {"$ref": "#/$defs/id"},
-        "from": {"$ref": "#/$defs/endpoint"},
-        "to": {"$ref": "#/$defs/endpoint"},
-        "status": {"enum": ["CONNECTED", "DISCONNECTED", "UNKNOWN"]},
-        "metadata": {"$ref": "#/$defs/connectionMetadata"}
+        "id": { "$ref": "#/$defs/id" },
+        "from": { "$ref": "#/$defs/endpoint" },
+        "to": { "$ref": "#/$defs/endpoint" },
+        "status": { "enum": ["CONNECTED", "DISCONNECTED", "UNKNOWN"] },
+        "phase_configuration": { "$ref": "#/$defs/phaseConfiguration" },
+        "conductors": {
+          "type": "array",
+          "items": { "enum": ["L", "L1", "L2", "L3", "N", "PE"] },
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true
+        },
+        "metadata": { "$ref": "#/$defs/connectionMetadata" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "phase_configuration": { "const": "INDIVIDUAL_CONDUCTOR" }
+            },
+            "required": ["phase_configuration"]
+          },
+          "then": {
+            "required": ["conductors"],
+            "properties": {
+              "conductors": { "minItems": 1, "maxItems": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase_configuration": { "const": "SINGLE_PHASE_TWO_WIRE" }
+            },
+            "required": ["phase_configuration"]
+          },
+          "then": {
+            "required": ["conductors"],
+            "properties": {
+              "conductors": {
+                "allOf": [
+                  { "contains": { "const": "L" } },
+                  { "contains": { "const": "N" } }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase_configuration": { "const": "SINGLE_PHASE_THREE_WIRE" }
+            },
+            "required": ["phase_configuration"]
+          },
+          "then": {
+            "required": ["conductors"],
+            "properties": {
+              "conductors": {
+                "allOf": [
+                  { "contains": { "const": "L1" } },
+                  { "contains": { "const": "L2" } },
+                  { "contains": { "const": "N" } }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase_configuration": { "const": "THREE_PHASE_THREE_WIRE" }
+            },
+            "required": ["phase_configuration"]
+          },
+          "then": {
+            "required": ["conductors"],
+            "properties": {
+              "conductors": {
+                "allOf": [
+                  { "contains": { "const": "L1" } },
+                  { "contains": { "const": "L2" } },
+                  { "contains": { "const": "L3" } }
+                ],
+                "not": { "contains": { "const": "N" } }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase_configuration": { "const": "THREE_PHASE_FOUR_WIRE" }
+            },
+            "required": ["phase_configuration"]
+          },
+          "then": {
+            "required": ["conductors"],
+            "properties": {
+              "conductors": {
+                "allOf": [
+                  { "contains": { "const": "L1" } },
+                  { "contains": { "const": "L2" } },
+                  { "contains": { "const": "L3" } },
+                  { "contains": { "const": "N" } }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "controlConnection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "from", "to", "status", "wire_role", "voltage_v", "metadata"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "from": { "$ref": "#/$defs/endpoint" },
+        "to": { "$ref": "#/$defs/endpoint" },
+        "status": { "enum": ["CONNECTED", "DISCONNECTED", "UNKNOWN"] },
+        "wire_role": {
+          "enum": ["CONTROL_LINE", "CONTROL_NEUTRAL", "CONTROL_RETURN", "PROTECTIVE_EARTH", "UNKNOWN"]
+        },
+        "voltage_v": { "$ref": "#/$defs/nullablePositive" },
+        "wire_label": { "type": ["string", "null"], "maxLength": 100 },
+        "metadata": { "$ref": "#/$defs/connectionMetadata" }
+      }
+    },
+    "logicReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["component_id", "state"],
+      "properties": {
+        "component_id": { "$ref": "#/$defs/id" },
+        "state": {
+          "enum": ["OPEN", "CLOSED", "ENERGIZED", "DEENERGIZED", "TRIPPED", "ELAPSED"]
+        }
+      }
+    },
+    "controlLogic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "inputs", "outputs", "delay_seconds", "metadata"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": {
+          "enum": ["ENERGIZE", "SELF_HOLD", "ON_DELAY", "OFF_DELAY", "MUTUAL_INTERLOCK", "STAR_DELTA_SEQUENCE"]
+        },
+        "inputs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/logicReference" },
+          "minItems": 1
+        },
+        "outputs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/logicReference" },
+          "minItems": 1
+        },
+        "delay_seconds": { "$ref": "#/$defs/nullableNonNegative" },
+        "metadata": { "$ref": "#/$defs/connectionMetadata" }
       }
     },
     "documentMetadata": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["model_revision", "created_at", "updated_at", "source", "evidence_label", "notes"],
+      "required": [
+        "model_revision",
+        "created_at",
+        "updated_at",
+        "source",
+        "evidence_label",
+        "notes"
+      ],
       "properties": {
         "model_revision": {
           "type": "string",
           "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
         },
-        "created_at": {"type": "string", "format": "date-time"},
-        "updated_at": {"type": "string", "format": "date-time"},
-        "source": {"type": "string", "minLength": 1, "maxLength": 500},
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" },
+        "source": { "type": "string", "minLength": 1, "maxLength": 500 },
         "evidence_label": {
           "enum": ["MEASURED", "DERIVED", "ESTIMATED", "SIMULATED", "OPTIMIZED"]
         },
         "notes": {
           "type": "array",
-          "items": {"type": "string", "maxLength": 1000}
+          "items": { "type": "string", "maxLength": 1000 }
         }
       }
     }

@@ -3,9 +3,9 @@ name: power-digital-twin-json
 description: Guide a user from plain-language electrical requirements or supplied specifications and single-line drawings to a validated, downloadable Power Digital Twin JSON file for continued work in EW AI Power Digital Twin.
 ---
 
-# EW AI Power Digital Twin v0.3.0
+# EW AI Power Digital Twin v0.5.0
 
-Turn a user's electrical-system intent into one concrete deliverable: a UTF-8 Power Digital Twin JSON file that conforms to schema version `0.1.0`. The JSON contract is the source of truth; a single-line diagram is only a view. Reply in the user's language. The three listing cards are bilingual for discovery, but ordinary answers must not repeat both languages unless requested.
+Turn a user's electrical-system intent into one concrete deliverable: a UTF-8 Power Digital Twin JSON file that conforms to current schema version `0.3.0`. The JSON contract is the source of truth; an electrical drawing is only a view. Reply in the user's language. The three listing cards are bilingual for discovery, but ordinary answers must not repeat both languages unless requested.
 
 ## Required resources
 
@@ -21,6 +21,7 @@ Accept any of these starting points without asking the user to choose a technica
 - an incomplete equipment list or one-line topology;
 - a tender or design specification in PDF, DOCX, TXT, JPEG or PNG supplied to the conversation;
 - a single-line diagram in PDF, JPEG, PNG, inert SVG or DXF supplied to the conversation.
+- an industrial power/control diagram in PDF, JPEG, PNG, inert SVG or DXF supplied to the conversation.
 
 Native DWG is unsupported; ask for DXF, SVG or PDF. Never claim to have read a file the host did not expose. Extract only visible or explicit facts and preserve their source in metadata. If a document conflicts with the user's later answer, describe the conflict and ask one consequential question.
 
@@ -31,20 +32,22 @@ If content would be sent to a separately configured external AI provider, name t
 Ask one main question per turn, with at most one tightly related follow-up. First establish the connection order, then ask only for engineering facts that remain unanswered.
 
 1. Establish system name, frequency and incoming utility voltage.
-2. Establish topology: utility grid, buses, breakers, transformers, cables/feeders, loads and DER.
-3. For every transformer ask rated capacity in kVA, primary voltage with V/kV, secondary voltage with V/kV and nameplate impedance percent.
-4. For each connected device ask only the ratings required to identify its electrical role and voltage level.
-5. Always accept “unknown”. Store unknown engineering values as `null` and do not ask the same answered-unknown question repeatedly.
-6. Use exact arithmetic for unit conversion. Never infer units from magnitude or substitute typical nameplate values.
-7. Summarize the topology, explicit facts, conflicts and remaining missing values before creating the file.
+2. Establish power and control topology: utility grid, buses, protection, transformers, cables/feeders, loads/DER, and any isolators, contactors, overloads, fuses, control transformers, buttons, timer relays and auxiliary contacts.
+3. For every connection ask whether it is 1Φ2W, 1Φ3W, 3Φ3W or 3Φ4W and confirm its conductor set; use `UNKNOWN` when the source does not establish it.
+4. For every transformer ask rated capacity in kVA, primary voltage with V/kV, secondary voltage with V/kV and nameplate impedance percent.
+5. For each connected device ask only the ratings required to identify its electrical role and voltage level.
+6. Always accept “unknown”. Store unknown engineering values as `null` and do not ask the same answered-unknown question repeatedly.
+7. Use exact arithmetic for unit conversion. Never infer units from magnitude or substitute typical nameplate values.
+8. For control circuits, identify every visible terminal, coil, NO/NC contact, ownership relation, delay, self-hold, sequence and interlock; never infer them from layout alone.
+9. Summarize the power/control topology, phase/wire systems, explicit facts, conflicts and remaining missing values before creating the file.
 
 ## Authoritative output workflow
 
-1. Build only schema version `0.1.0` using `system`, `components`, `connections` and `metadata`.
-2. Use only the 12 supported component types and only schema fields.
-3. Use `connections` as the sole topology representation. Never add component-level `from` or `to`.
+1. Build new files as schema version `0.3.0` using `system`, `components`, `connections`, `control_connections`, `control_logic` and `metadata`.
+2. Use only the 20 supported component types and only schema fields.
+3. Use `connections` only for power topology and `control_connections` only for control wiring. Never add component-level `from` or `to`.
 4. Keep the generated state `DRAFT` or `REVIEW_REQUIRED`. The AI must never issue `MODEL_READY`.
-5. Validate JSON syntax, version, required fields, component types, unique IDs, connection references, transformer terminals, voltage consistency, numeric types, ranges and unsupported fields.
+5. Validate JSON syntax, version, required fields, component types, unique IDs, power/control connection references, exact terminals, coil/contact local references, parent ownership, phase/conductor consistency, motor six-terminal completeness, interlock targets, voltage consistency, numeric types, ranges and unsupported fields.
 6. Correct structural errors only. Do not fill a missing engineering value to make validation pass.
 7. Create a real downloadable UTF-8 file attachment named `ew-power-digital-twin-<SYSTEM_ID>.json`, using a lowercase filesystem-safe form of the system ID. Do not deliver only a fenced code block when file creation is available.
 8. In the final response, state the schema version, model status, validation result and unresolved engineering gaps. Provide the file link.
@@ -63,6 +66,7 @@ If deterministic validation cannot actually run, label the result `VALIDATION_NO
 - impedance: `impedance_percent` in percent
 - energy/capacity: `energy_kwh`, `capacity_kwh` in kWh
 - power factor: `power_factor`, dimensionless from 0 to 1
+- control delay: `delay_seconds` in seconds
 
 Examples: `22.8 kV` becomes `22800` V and `1.5 MVA` becomes `1500` kVA. A bare `22.8` remains unresolved until the user supplies a unit.
 
@@ -81,7 +85,7 @@ Examples: `22.8 kV` becomes `22800` V and `1.5 MVA` becomes `1500` kVA. A bare `
 Keep the handoff short and concrete:
 
 - downloadable filename;
-- schema version `0.1.0`;
+- schema version `0.3.0`;
 - `DRAFT` or `REVIEW_REQUIRED`;
 - validation `PASS`, `FAIL`, or `NOT RUN`;
 - unresolved fields that block `MODEL_READY`;

@@ -4,7 +4,7 @@
       "id": "POS-001",
       "prompt": "請引導我建立一個 22.8 kV 工廠配電系統，包含主斷路器、1500 kVA 變壓器、低壓母線及三個負載。",
       "expected_behavior": "Read the bundled contract, ask bounded topology and unit-aware transformer questions, preserve unknown impedance as null, validate the DRAFT model, and create a downloadable JSON file.",
-      "expected_result": "A downloadable schema_version 0.1.0 DRAFT JSON file plus validation and missing-data results."
+      "expected_result": "A downloadable schema_version 0.3.0 DRAFT JSON file with explicit or UNKNOWN phase/wire connections, empty control arrays when not applicable, validation and missing-data results."
     },
     {
       "id": "POS-002",
@@ -41,6 +41,12 @@
       "prompt": "Please convert the attached single-line diagram into Power Digital Twin JSON.",
       "expected_behavior": "Use the declared drawing-input policy, preserve visible evidence and confidence, reject native DWG, and require destination-specific confirmation before forwarding to another provider.",
       "expected_result": "Validated reviewable topology or explicit blocking findings; never an AI-approved MODEL_READY model."
+    },
+    {
+      "id": "POS-008",
+      "prompt": "Convert this 380 V, 15 kW star-delta motor starter with QS, KM1/KM2/KM3, FR, JBK 220 V, FU, start/stop buttons and timer contacts.",
+      "expected_behavior": "Preserve the main circuit and control circuit separately, declare U1/V1/W1/U2/V2/W2, coils, NO/NC contacts, self-hold, timer transition and mutual interlock, and keep unknown timer/protection ratings null.",
+      "expected_result": "A validated schema_version 0.3.0 Power + Control JSON file without dropping devices into metadata."
     }
   ],
   "negative": [

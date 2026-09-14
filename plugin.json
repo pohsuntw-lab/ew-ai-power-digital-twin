@@ -1,15 +1,15 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "power-digital-twin",
-  "version": "0.3.0",
-  "description": "Create downloadable, validated Power Digital Twin JSON from guided electrical requirements or user-supplied specifications and single-line drawings.",
+  "version": "0.5.0",
+  "description": "Create downloadable, validated Power + Control Digital Twin JSON from guided electrical requirements, specifications and electrical drawings.",
   "author": {
     "name": "Embodied Worker",
     "url": "https://www.embodiedworker.com"
   },
   "homepage": "https://www.embodiedworker.com",
   "repository": "https://github.com/pohsuntw-lab/ew-ai-power-digital-twin",
-  "keywords": ["power-system", "digital-twin", "single-line-diagram", "veragrid"],
+  "keywords": ["power-system", "industrial-control", "digital-twin", "single-line-diagram", "veragrid"],
   "extensions": {
     "com.openai": {
       "interface": {
@@ -23,7 +23,7 @@
         "defaultPrompt": [
           "Create a downloadable power-system JSON from my description. / 請把我的描述轉成可下載的電力系統 JSON。",
           "Guide me through missing ratings, then export JSON. / 請引導我補齊設備規格，再匯出 JSON。",
-          "Convert my specification or single-line diagram to JSON. / 請將規範或單線圖轉成 JSON。"
+          "Convert my specification, single-line diagram, or control diagram to JSON. / 請將規範、單線圖或控制圖轉成 JSON。"
         ],
         "brandColor": "#0B3D32",
         "composerIcon": "./assets/icon.png",

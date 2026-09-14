@@ -1,8 +1,8 @@
-# EW AI Power Digital Twin v0.3.0 Publishing Guide / 發布指引
+# EW AI Power Digital Twin v0.5.0 Publishing Guide / 發布指引
 
 ## Release form / 發布形式
 
-Publish this version as a **Skills-only** ChatGPT plugin. The user-facing job is guided text/document/drawing interpretation followed by a downloadable schema-version `0.1.0` JSON file. The local MCP implementation remains a deterministic development and validation aid; it is not part of the public submission bundle and the Mac mini is not exposed to the Internet.
+Publish candidate version `0.5.0` as a **Skills-only** ChatGPT plugin only after fresh review and explicit owner authorization. The user-facing job is guided text/document/drawing interpretation followed by a downloadable schema-version `0.3.0` Power + Control JSON file with explicit phase/wire, terminal, contact, coil, delay and interlock semantics. The local MCP implementation remains a deterministic development and validation aid; it is not part of the public submission bundle and the Mac mini is not exposed to the Internet.
 
 ## Listing / 上架資訊
 
@@ -32,6 +32,8 @@ Publish this version as a **Skills-only** ChatGPT plugin. The user-facing job is
 7. Push the reviewed commit to GitHub before uploading the bundle in the OpenAI Platform plugin portal.
 8. Complete required developer/business verification and truthful legal attestations in the portal.
 9. Submit for OpenAI review. Publish only after approval and a final owner decision; do not merge to `main` automatically.
+
+Version `0.3.0` completed this sequence and remains published at `https://chatgpt.com/plugins/plugins_6aa67d96732c819182bcd9b52eb9fe3d`. Candidate `0.5.0` source must repeat every gate and receive explicit owner authorization before publication.
 
 ## Web handoff / Web 銜接
 
