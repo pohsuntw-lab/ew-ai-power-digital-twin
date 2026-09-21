@@ -3,7 +3,7 @@ name: power-digital-twin-json
 description: Guide a user from plain-language electrical requirements or supplied specifications and single-line drawings to a validated, downloadable Power Digital Twin JSON file for continued work in EW AI Power Digital Twin.
 ---
 
-# EW AI Power Digital Twin v0.5.2 (review candidate)
+# EW AI Power Digital Twin v0.5.3 (review candidate)
 
 Turn a user's electrical-system intent into one concrete deliverable: a UTF-8 Power Digital Twin JSON file that conforms to current schema version `0.3.0`. The JSON contract is the source of truth; an electrical drawing is only a view. Reply in the user's language. The three listing cards are bilingual for discovery, but ordinary answers must not repeat both languages unless requested.
 

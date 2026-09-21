@@ -4,7 +4,7 @@ EW AI Power Digital Twin is a Skills-only ChatGPT plugin that guides a user from
 
 EW AI Power Digital Twin 是純 Skill 形式的 ChatGPT 外掛，引導使用者將電力系統文字描述、規範、標書、單線圖或工業控制圖轉換為可下載的 Power + Control Digital Twin JSON。
 
-Current source version / 目前原始碼版本：`0.5.2` (review candidate). Drawing conversion now requires electrical-symbol and conductor inspection, source-to-graph reconciliation, and separate reporting of contract validation and drawing fidelity. / 圖紙轉換須先檢查電氣符號與導線連續性、逐項核對原圖與 JSON 拓撲，並分別報告契約驗證及圖紙還原結果。本候選版本尚未代表 ChatGPT 外掛已發布。
+Current source version / 目前原始碼版本：`0.5.3` (review candidate). Drawing conversion now requires electrical-symbol and conductor inspection, source-to-graph reconciliation, and separate reporting of contract validation, drawing fidelity, and destination VeraGrid eligibility. / 圖紙轉換須先檢查電氣符號與導線連續性、逐項核對原圖與 JSON 拓撲，並分別報告契約驗證、圖紙還原及目的系統 VeraGrid 適用性。本候選版本尚未代表 ChatGPT 外掛已發布。
 
 ## Contract boundary / 契約邊界
 

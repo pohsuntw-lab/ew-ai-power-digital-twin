@@ -1,8 +1,8 @@
-# EW AI Power Digital Twin v0.5.2 Publishing Guide / 發布指引
+# EW AI Power Digital Twin v0.5.3 Publishing Guide / 發布指引
 
 ## Release form / 發布形式
 
-Version `0.5.2` is a **Skills-only review candidate**. It retains Contract `0.3.0` and adds a drawing-first extraction and source-to-graph audit gate. Contract validation and drawing fidelity must be reported separately. The 0.3.0 limitation for CT/VT measurement wiring and drawing coordinates must be disclosed, never hidden by an invented power/control connection. This source update is not evidence that the ChatGPT plugin has been updated or published. The local MCP remains an unpublished deterministic development aid.
+Version `0.5.3` is a **Skills-only review candidate**. It retains Contract `0.3.0` and adds drawing-first extraction, a source-to-graph audit, and a separate destination simulation capability gate. Contract validation, drawing fidelity and VeraGrid eligibility must be reported separately. The 0.3.0 limitation for CT/VT measurement wiring and drawing coordinates must be disclosed, never hidden by an invented power/control connection. Version 0.5.2 was approved in the portal but remains unpublished; its earlier ZIP lacks the simulation capability gate and must not be published as the complete fix. This source update is not evidence that the ChatGPT plugin has been updated or published. The local MCP remains an unpublished deterministic development aid.
 
 ## Listing / 上架資訊
 
@@ -25,7 +25,7 @@ Version `0.5.2` is a **Skills-only review candidate**. It retains Contract `0.3.
 
 1. Build the clean bundle with `.venv/bin/python plugins/power-digital-twin/scripts/package_submission.py`.
 2. Confirm the bundled Schema SHA-256 equals the repository authority.
-3. Run the positive and negative submission cases against their real fixtures; record actual results without rewriting expectations to force a pass. `POS-009` must trace the main path and `NEG-005` must flag a structurally valid but disconnected model. Verify that the synthetic drawing fixture contains no user-uploaded drawing.
+3. Run the positive and negative submission cases against their real fixtures; record actual results without rewriting expectations to force a pass. `POS-009` must trace the main path, `NEG-005` must flag a structurally valid but disconnected model, and `POS-010`/`NEG-006` must distinguish valid star-delta drawing JSON from unsupported direct VeraGrid simulation. Verify that the synthetic drawing fixture contains no user-uploaded drawing.
 4. Confirm generated answers create a downloadable `.json` file, not only a code block.
 5. Confirm missing engineering facts remain `null`, and AI never returns `MODEL_READY`.
 6. Run repository automated tests, Markdown checking, license inventory and secret scanning.
@@ -33,7 +33,7 @@ Version `0.5.2` is a **Skills-only review candidate**. It retains Contract `0.3.
 8. Complete required developer/business verification and truthful legal attestations in the portal.
 9. Submit for OpenAI review. Publish only after approval and a final owner decision; do not merge to `main` automatically.
 
-Version `0.5.0` completed this sequence and was published at `https://chatgpt.com/plugins/plugins_6aa67d96732c819182bcd9b52eb9fe3d`. Its OpenAI submission ID is `appsub_6aa796a4a6308191b9f3dcfccaabdb53`. Confirm the current live version in the portal before publishing 0.5.2. Record 0.5.2 scan, review and publication evidence only after those actions succeed.
+Version `0.5.0` completed this sequence and was published at `https://chatgpt.com/plugins/plugins_6aa67d96732c819182bcd9b52eb9fe3d`. Its OpenAI submission ID is `appsub_6aa796a4a6308191b9f3dcfccaabdb53`. Confirm the current live version in the portal before publishing 0.5.3. Record 0.5.3 scan, review and publication evidence only after those actions succeed.
 
 ## Web handoff / Web 銜接
 
