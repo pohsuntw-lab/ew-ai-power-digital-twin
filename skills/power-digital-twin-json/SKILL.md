@@ -44,6 +44,14 @@ Schema 0.3.0 has no first-class measurement-wire array or drawing coordinates. D
 
 The drawing audit requires actual inspection of the imported rendering when a preview is available. Compare main-path order, branch origin, instrument attachments and component inventory against the source. If preview is unavailable, report `NOT RUN`; do not claim visual equivalence. Never use a site-specific special renderer as evidence that the generic import works for other diagrams.
 
+## Destination simulation capability gate
+
+Before saying a generated JSON can run a VeraGrid design power flow, distinguish three checks: contract structure, drawing fidelity, and destination simulation readiness. The current Web positive-sequence adapter supports power-path component types `utility_grid`, `bus`, `transformer`, `breaker`, `load`, `meter`, and `ct_pt`. A valid 0.3.0 contract may include `isolator`, `fuse`, `control_transformer`, `contactor`, `overload_relay`, `motor`, `push_button`, `timer_relay`, and `aux_contact` for drawing/control representation; power-referenced unsupported types cannot be passed directly to this adapter. This list describes the current destination implementation, not what the JSON schema permits.
+
+The adapter also requires an explicitly approved `MODEL_READY` revision, positive frequency and base power, one utility grid, known phase configuration for simulated routes, and a load or a complete measured boundary. The user may supply missing numeric inputs for a design case, but those inputs do not turn a starter control diagram into a supported load-flow model. Never silently replace a motor, contactor, overload, or fuse with a `load` or `breaker` just to pass readiness. An engineering equivalent for steady-state load flow, if desired, is a separate reviewed model with explicit ratings, power/reactive input or power factor, and a documented mapping from the source diagram. Star-delta start sequence and control transients are outside the positive-sequence steady-state calculation.
+
+If any of these prerequisites fail, report `DESIGN_SIMULATION_UNSUPPORTED` or `NOT_READY` with the exact offending component IDs/types and missing values. Still deliver a structurally valid drawing/control JSON when requested, but do not present it as directly executable in VeraGrid. The completion response must separately state destination simulation eligibility when the user intends to run a simulation.
+
 ## Guided conversation
 
 For text-only specifications, ask one main question per turn, with at most one tightly related follow-up. For supplied drawings, perform the drawing-first extraction gate and ask only the critical ambiguity question defined there.

@@ -30,6 +30,8 @@ For drawing input, record the source page and region and distinguish visible lab
 
 Version 0.3.0 cannot represent CT/VT secondary measurement wires as first-class connections: power connections reject MEASUREMENT endpoints and control connections are for control wiring. It also cannot store source-faithful coordinates or wire routes. Preserve such observations in metadata, set the drawing audit to `INCOMPLETE`, and disclose that the Web drawing will omit them. Never reclassify measurement wiring as power or control merely to get a connected-looking preview. A later version of the contract and Web renderer must add first-class measurement connectivity before these circuits can be faithfully exchanged.
 
+Contract validity is distinct from destination simulation readiness. The current Web VeraGrid positive-sequence adapter accepts `utility_grid`, `bus`, `transformer`, `breaker`, `load`, `meter`, and `ct_pt` on a simulated power path. The 0.3.0 contract intentionally allows additional industrial power/control components for drawing and review, but their presence on the power path blocks this adapter. The adapter also needs one utility grid, a load or complete measured boundary, positive frequency and base power, known simulated-route phase configuration, and a human-approved `MODEL_READY` revision. A valid star-delta motor starter with isolators, contactors, overload protection and motor is therefore not directly executable as a steady-state load-flow case. Do not mutate its electrical identity to make simulation validation pass; make any engineering equivalent a separate, explicitly reviewed model.
+
 ## Minimal valid example
 
 ```json

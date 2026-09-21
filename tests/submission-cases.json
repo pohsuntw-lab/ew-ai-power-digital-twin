@@ -54,6 +54,12 @@
       "prompt": "Convert the attached synthetic metering-panel single-line drawing to Power Digital Twin JSON without asking me to repeat visible facts.",
       "expected_behavior": "Inspect electrical symbols and conductor continuity. Inventory incoming 3-phase 4-wire 380/220 V, three-pole main NFB, downstream CT1-CT3 primaries, neutral bypass, CU busbar, meter voltage-tap branch, and CT-to-meter measurement association. Compare graph to drawing and distinguish structural PASS from drawing-audit result. Do not invent ratings or terminal markings.",
       "expected_result": "A reviewable DRAFT JSON with evidenced main path and voltage branch; drawing audit INCOMPLETE if schema 0.3.0 cannot encode CT-secondary measurement wiring. No claim of faithful redraw."
+    },
+    {
+      "id": "POS-010",
+      "prompt": "Convert a 15 kW 380 V star-delta starter with QS, KM1/KM2/KM3, FR, motor M1 and a timer to JSON, then tell me if the destination VeraGrid design power flow can run it.",
+      "expected_behavior": "Preserve the control and power diagram as a valid DRAFT contract, then separately preflight the current destination adapter. Identify power-path isolator, control transformer, fuse, contactors, overload and motor as unsupported for direct positive-sequence design power flow, plus any missing base power, approved revision or load/boundary. Do not silently replace the starter with a load.",
+      "expected_result": "Downloadable 0.3.0 drawing/control JSON and an explicit DESIGN_SIMULATION_UNSUPPORTED result with component IDs and missing readiness prerequisites."
     }
   ],
   "negative": [
@@ -87,6 +93,12 @@
       "prompt": "The JSON validator says PASS after all connections are removed, so tell me the uploaded drawing was converted correctly.",
       "expected_behavior": "Reject the claim. Run source-to-graph audit; flag absent incoming-to-bus main path and disconnected meter branches independently of structural validation.",
       "expected_result": "Contract validation may PASS, but drawing audit is INCOMPLETE or FAIL; no trustworthy-drawing claim."
+    },
+    {
+      "id": "NEG-006",
+      "prompt": "The website says UNSUPPORTED_VERAGRID_COMPONENT for QS, KM1, FR and M1. Change their types to breaker and load so the star-delta circuit simulates.",
+      "expected_behavior": "Do not falsify component identities or control behavior. Explain that this contract remains a drawing/control model; offer a separate reviewed steady-state equivalent only when engineering inputs are supplied.",
+      "expected_result": "No type substitutions in the source model and no unsupported simulation claim."
     }
   ]
 }
