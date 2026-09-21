@@ -3,7 +3,7 @@ name: power-digital-twin-json
 description: Guide a user from plain-language electrical requirements or supplied specifications and single-line drawings to a validated, downloadable Power Digital Twin JSON file for continued work in EW AI Power Digital Twin.
 ---
 
-# EW AI Power Digital Twin v0.5.1
+# EW AI Power Digital Twin v0.5.2 (review candidate)
 
 Turn a user's electrical-system intent into one concrete deliverable: a UTF-8 Power Digital Twin JSON file that conforms to current schema version `0.3.0`. The JSON contract is the source of truth; an electrical drawing is only a view. Reply in the user's language. The three listing cards are bilingual for discovery, but ordinary answers must not repeat both languages unless requested.
 
@@ -27,9 +27,26 @@ Native DWG is unsupported; ask for DXF, SVG or PDF. Never claim to have read a f
 
 If content would be sent to a separately configured external AI provider, name the provider/model and destination first and obtain explicit confirmation for that session. This Skill does not request or store API keys.
 
+## Drawing-first extraction gate
+
+For a supplied electrical drawing, read the drawing as an electrical schematic before writing JSON. Do this automatically; do not ask the user to restate facts that are visible in the attachment. Treat symbols, wire crossings, junction dots, conductor labels, terminal marks, device tags, line weights, and the title block as evidence. Apply the notation and legend printed on the drawing first, then ordinary IEC/IEEE electrical-drawing conventions where applicable. A crossing without a junction dot is not a connection unless the drawing convention establishes otherwise. The position of a symbol alone does not establish an electrical connection.
+
+1. Inspect the original at its available resolution. If small labels or intersections matter, magnify/crop those regions for inspection. Use OCR as an aid to reading text, then check each critical result against the pixels. Do not treat OCR output as authoritative. Do not call a low-resolution original illegible when its main topology and standard symbols remain readable.
+2. Make an internal evidence ledger before generating the contract: source page/region; visible tag and symbol; component type; each readable terminal or conductor; each wire's two endpoints; whether the wire is power, control, or measurement; and confidence/uncertainty. Trace every conductor through protective devices, CT/VT primaries and secondaries, neutral/ground paths, branch taps, meters, and busbars. Distinguish an internal device path from an external wire.
+3. Trace the main path from every incoming boundary to each depicted bus/load, then trace each branch separately. Check for omitted symbols, dangling ends, accidental shorts, reversed branches, and disconnected instruments. Preserve distinct DF/FU/MCB groups rather than merging them merely because they serve the same meter.
+4. Use symbol meaning and visible continuity to resolve ordinary topology without dialogue. Ask only when a critical connection or device identity remains genuinely ambiguous after inspection and changes the model. Give the specific page/region and the two plausible readings in that one question. Unknown nameplate ratings may stay `null` without interrupting drawing conversion.
+5. Do not invent printed terminal names, ratings, CT polarity, junctions, or wires. When schema-compliant logical terminal IDs are needed, mark them as model ports in component metadata and do not describe them as observed labels.
+6. Before delivery, compare the generated graph back to the evidence ledger: every visible in-scope device accounted for; every main-path segment and branch represented; phase/neutral/ground paths consistent; CT/VT and meter associations present; and no JSON edge lacking drawing evidence. Report counts of matched, unresolved, and deliberately unrepresented items.
+
+Contract validation is only a structural check. It must never be called drawing-fidelity, electrical-correctness, or simulation-readiness validation. The source-to-graph audit above is a separate mandatory gate for image conversion. `PASS` in the completion response means contract validation only; explicitly report the drawing audit as `PASS`, `INCOMPLETE`, or `NOT RUN` separately. An empty or disconnected `connections` array cannot pass the drawing audit when the source depicts an energized main path.
+
+Schema 0.3.0 has no first-class measurement-wire array or drawing coordinates. Do not turn CT secondary signal wires into load-bearing power edges or control wires to conceal this gap. Preserve the observed secondary-to-meter relation in metadata with its source region and mark the drawing audit `INCOMPLETE`; clearly state that the exported JSON cannot reproduce those measurement wires in the target renderer. The same rule applies to any essential relation that the installed contract or renderer cannot express. Do not imply that a valid JSON import will redraw the source faithfully when these gaps exist.
+
+The drawing audit requires actual inspection of the imported rendering when a preview is available. Compare main-path order, branch origin, instrument attachments and component inventory against the source. If preview is unavailable, report `NOT RUN`; do not claim visual equivalence. Never use a site-specific special renderer as evidence that the generic import works for other diagrams.
+
 ## Guided conversation
 
-Ask one main question per turn, with at most one tightly related follow-up. First establish the connection order, then ask only for engineering facts that remain unanswered.
+For text-only specifications, ask one main question per turn, with at most one tightly related follow-up. For supplied drawings, perform the drawing-first extraction gate and ask only the critical ambiguity question defined there.
 
 1. Establish system name, frequency and incoming utility voltage.
 2. Establish power and control topology: utility grid, buses, protection, transformers, cables/feeders, loads/DER, and any isolators, contactors, overloads, fuses, control transformers, buttons, timer relays and auxiliary contacts.
@@ -39,7 +56,7 @@ Ask one main question per turn, with at most one tightly related follow-up. Firs
 6. Always accept “unknown”. Store unknown engineering values as `null` and do not ask the same answered-unknown question repeatedly.
 7. Use exact arithmetic for unit conversion. Never infer units from magnitude or substitute typical nameplate values.
 8. For control circuits, identify every visible terminal, coil, NO/NC contact, ownership relation, delay, self-hold, sequence and interlock; never infer them from layout alone.
-9. Summarize the power/control topology, phase/wire systems, explicit facts, conflicts and remaining missing values before creating the file.
+9. Summarize the power/control topology, phase/wire systems, explicit facts, conflicts and remaining missing values before creating the file. This summary does not require a user reply when the drawing resolves them.
 
 ## Authoritative output workflow
 
@@ -50,7 +67,7 @@ Ask one main question per turn, with at most one tightly related follow-up. Firs
 5. Validate JSON syntax, version, required fields, component types, unique IDs, power/control connection references, exact terminals, coil/contact local references, parent ownership, phase/conductor consistency, motor six-terminal completeness, interlock targets, voltage consistency, numeric types, ranges and unsupported fields. Before delivery, assert for every power and control connection that `from.component_id != to.component_id`; repair every `SELF_CONNECTION` structurally rather than suppressing it.
 6. Correct structural errors only. Do not fill a missing engineering value to make validation pass.
 7. Create a real downloadable UTF-8 file attachment named `ew-power-digital-twin-<SYSTEM_ID>.json`, using a lowercase filesystem-safe form of the system ID. Do not deliver only a fenced code block when file creation is available.
-8. In the final response, state the schema version, model status, validation result and unresolved engineering gaps. Provide the file link.
+8. In the final response, state the schema version, model status, structural validation result, drawing-audit result when applicable, and unresolved engineering gaps. Provide the file link.
 9. Direct the user to the authenticated AI Power Digital Twin Dynamic Simulation System at `https://asns-egs-power-sandbox.queboxun.chatgpt.site` to open the JSON, continue review/drawing, bind EDC SUID/CUID channels, complete the human `MODEL_READY` gate and run VeraGrid simulation.
 
 If deterministic validation cannot actually run, label the result `VALIDATION_NOT_RUN`; do not claim that the file is validated. The JSON file may still be delivered as `DRAFT` with a clear warning.
@@ -98,5 +115,6 @@ Keep the handoff short and concrete:
 - schema version `0.3.0`;
 - `DRAFT` or `REVIEW_REQUIRED`;
 - validation `PASS`, `FAIL`, or `NOT RUN`;
+- for drawings, separate drawing audit `PASS`, `INCOMPLETE`, or `NOT RUN`, with a concise reason if incomplete;
 - unresolved fields that block `MODEL_READY`;
 - next step: open the JSON in the authenticated Web application.

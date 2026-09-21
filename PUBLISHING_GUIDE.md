@@ -1,8 +1,8 @@
-# EW AI Power Digital Twin v0.5.1 Publishing Guide / 發布指引
+# EW AI Power Digital Twin v0.5.2 Publishing Guide / 發布指引
 
 ## Release form / 發布形式
 
-Version `0.5.1` is the owner-authorized **Skills-only** ChatGPT plug-in update prepared for OpenAI review. It retains Contract `0.3.0` and adds a strict generation invariant: every external power/control connection joins two distinct components. Star-delta starters use a separate star-point bus, complete evidenced delta cross-connections and control-compatible transformer/fuse terminals; missing wiring stays a blocking gap. Version `0.5.0` remains the published version until `0.5.1` passes the Platform Skill scan/review and final publish action. The local MCP remains an unpublished deterministic development aid.
+Version `0.5.2` is a **Skills-only review candidate**. It retains Contract `0.3.0` and adds a drawing-first extraction and source-to-graph audit gate. Contract validation and drawing fidelity must be reported separately. The 0.3.0 limitation for CT/VT measurement wiring and drawing coordinates must be disclosed, never hidden by an invented power/control connection. This source update is not evidence that the ChatGPT plugin has been updated or published. The local MCP remains an unpublished deterministic development aid.
 
 ## Listing / 上架資訊
 
@@ -25,7 +25,7 @@ Version `0.5.1` is the owner-authorized **Skills-only** ChatGPT plug-in update p
 
 1. Build the clean bundle with `.venv/bin/python plugins/power-digital-twin/scripts/package_submission.py`.
 2. Confirm the bundled Schema SHA-256 equals the repository authority.
-3. Run the positive and negative submission cases; record actual results without rewriting expectations to force a pass.
+3. Run the positive and negative submission cases against their real fixtures; record actual results without rewriting expectations to force a pass. `POS-009` must trace the main path and `NEG-005` must flag a structurally valid but disconnected model. Verify that the synthetic drawing fixture contains no user-uploaded drawing.
 4. Confirm generated answers create a downloadable `.json` file, not only a code block.
 5. Confirm missing engineering facts remain `null`, and AI never returns `MODEL_READY`.
 6. Run repository automated tests, Markdown checking, license inventory and secret scanning.
@@ -33,7 +33,7 @@ Version `0.5.1` is the owner-authorized **Skills-only** ChatGPT plug-in update p
 8. Complete required developer/business verification and truthful legal attestations in the portal.
 9. Submit for OpenAI review. Publish only after approval and a final owner decision; do not merge to `main` automatically.
 
-Version `0.5.0` completed this sequence and is published at `https://chatgpt.com/plugins/plugins_6aa67d96732c819182bcd9b52eb9fe3d`. Its OpenAI submission ID is `appsub_6aa796a4a6308191b9f3dcfccaabdb53`. Version `0.5.1` has explicit owner authorization in the development task; its scan, review and publication evidence must be recorded only after those actions succeed.
+Version `0.5.0` completed this sequence and was published at `https://chatgpt.com/plugins/plugins_6aa67d96732c819182bcd9b52eb9fe3d`. Its OpenAI submission ID is `appsub_6aa796a4a6308191b9f3dcfccaabdb53`. Confirm the current live version in the portal before publishing 0.5.2. Record 0.5.2 scan, review and publication evidence only after those actions succeed.
 
 ## Web handoff / Web 銜接
 

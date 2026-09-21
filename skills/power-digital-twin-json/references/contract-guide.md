@@ -26,6 +26,10 @@ Unknown engineering parameters are `null`, never typical values. Use `DRAFT` whi
 
 Generated facts derived directly from the user's explicit description normally use `DERIVED`. Do not label AI-extracted or user-stated values as `MEASURED`; that label is reserved for actual measurement evidence.
 
+For drawing input, record the source page and region and distinguish visible labels from logical model ports. A structurally valid contract can still omit every connection; schema validation does not prove that the drawing was transcribed completely. Reconcile the component and connection graph against the drawing before claiming a successful conversion. Keep distinct source symbols and branches distinct in the model unless the drawing itself establishes a common device.
+
+Version 0.3.0 cannot represent CT/VT secondary measurement wires as first-class connections: power connections reject MEASUREMENT endpoints and control connections are for control wiring. It also cannot store source-faithful coordinates or wire routes. Preserve such observations in metadata, set the drawing audit to `INCOMPLETE`, and disclose that the Web drawing will omit them. Never reclassify measurement wiring as power or control merely to get a connected-looking preview. A later version of the contract and Web renderer must add first-class measurement connectivity before these circuits can be faithfully exchanged.
+
 ## Minimal valid example
 
 ```json

@@ -47,6 +47,13 @@
       "prompt": "Convert this 380 V, 15 kW star-delta motor starter with QS, KM1/KM2/KM3, FR, JBK 220 V, FU, start/stop buttons and timer contacts.",
       "expected_behavior": "Preserve the main circuit and control circuit separately, declare U1/V1/W1/U2/V2/W2, coils, NO/NC contacts, self-hold, timer transition and mutual interlock, and keep unknown timer/protection ratings null.",
       "expected_result": "A validated schema_version 0.3.0 Power + Control JSON file without dropping devices into metadata."
+    },
+    {
+      "id": "POS-009",
+      "fixture": "tests/fixtures/metering-panel.svg",
+      "prompt": "Convert the attached synthetic metering-panel single-line drawing to Power Digital Twin JSON without asking me to repeat visible facts.",
+      "expected_behavior": "Inspect electrical symbols and conductor continuity. Inventory incoming 3-phase 4-wire 380/220 V, three-pole main NFB, downstream CT1-CT3 primaries, neutral bypass, CU busbar, meter voltage-tap branch, and CT-to-meter measurement association. Compare graph to drawing and distinguish structural PASS from drawing-audit result. Do not invent ratings or terminal markings.",
+      "expected_result": "A reviewable DRAFT JSON with evidenced main path and voltage branch; drawing audit INCOMPLETE if schema 0.3.0 cannot encode CT-secondary measurement wiring. No claim of faithful redraw."
     }
   ],
   "negative": [
@@ -73,6 +80,13 @@
       "prompt": "把馬達 U2、V2、W2 直接用 KM3 元件自己的端子互接成星點，並省略 KM2 的三角跨接。",
       "expected_behavior": "Reject every power or control connection whose endpoints name the same component, represent the star junction with a separate bus, require all three delta cross-connections when evidenced, and preserve a blocking gap when their exact terminals are unknown.",
       "expected_result": "No self-connection, no fabricated delta wiring, and validation PASS only after structural repair."
+    },
+    {
+      "id": "NEG-005",
+      "fixture": "tests/fixtures/metering-panel.svg",
+      "prompt": "The JSON validator says PASS after all connections are removed, so tell me the uploaded drawing was converted correctly.",
+      "expected_behavior": "Reject the claim. Run source-to-graph audit; flag absent incoming-to-bus main path and disconnected meter branches independently of structural validation.",
+      "expected_result": "Contract validation may PASS, but drawing audit is INCOMPLETE or FAIL; no trustworthy-drawing claim."
     }
   ]
 }

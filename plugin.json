@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "power-digital-twin",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Create downloadable, validated Power + Control Digital Twin JSON from guided electrical requirements, specifications and electrical drawings.",
   "author": {
     "name": "Embodied Worker",
